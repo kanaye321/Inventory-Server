@@ -1,0 +1,21 @@
+@echo off
+
+set MANAGER_IP=107.105.221.103
+set GROUP_NAME=Windows
+set DOWNLOAD_URL=https://packages.wazuh.com/4.x/windows/wazuh-agent-4.7.5-1.msi
+set INSTALLER=%TEMP%\wazuh-agent.msi
+
+echo Downloading Wazuh Agent...
+
+powershell -Command "Invoke-WebRequest -Uri %DOWNLOAD_URL% -OutFile %INSTALLER%"
+
+echo Installing Wazuh Agent...
+
+msiexec /i %INSTALLER% /qn WAZUH_MANAGER=%MANAGER_IP% WAZUH_AGENT_GROUP=%GROUP_NAME%
+
+echo Starting Wazuh Service...
+
+net start WazuhSvc
+
+echo Installation Complete.
+pause
