@@ -1,0 +1,24 @@
+<localfile>
+  <log_format>json</log_format>
+  <location>/usr/local/zeek/logs/current/conn.log</location>
+</localfile>
+
+<localfile>
+  <log_format>json</log_format>
+  <location>/usr/local/zeek/logs/current/dns.log</location>
+</localfile>
+
+<localfile>
+  <log_format>json</log_format>
+  <location>/usr/local/zeek/logs/current/http.log</location>
+</localfile>
+
+<localfile>
+  <log_format>json</log_format>
+  <location>/usr/local/zeek/logs/current/ssl.log</location>
+</localfile>
+
+<localfile>
+  <log_format>json</log_format>
+  <location>/usr/local/zeek/logs/current/notice.log</location>
+</localfile>
