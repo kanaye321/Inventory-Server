@@ -1,0 +1,11 @@
+<decoder name="zeek_conn">
+  <program_name>zeek</program_name>
+  <type>full_log</type>
+  <regex>^(?<ts>\S+)\s+(?<uid>\S+)\s+(?<id_orig_h>\S+)\s+(?<id_orig_p>\S+)\s+(?<id_resp_h>\S+)\s+(?<id_resp_p>\S+)\s+(?<proto>\S+)\s+(?<service>\S+)\s+(?<duration>\S+)\s+(?<orig_bytes>\d+)\s+(?<resp_bytes>\d+)$</regex>
+</decoder>
+
+<decoder name="zeek_http">
+  <program_name>zeek</program_name>
+  <type>full_log</type>
+  <regex>^(?<ts>\S+)\s+(?<uid>\S+)\s+(?<id_orig_h>\S+)\s+(?<id_orig_p>\S+)\s+(?<id_resp_h>\S+)\s+(?<id_resp_p>\S+)\s+(?<host>\S+)\s+(?<uri>\S+)\s+(?<method>\S+)\s+(?<user_agent>.*)$</regex>
+</decoder>
