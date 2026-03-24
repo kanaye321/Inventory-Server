@@ -3,7 +3,7 @@
   become: yes
 
   vars:
-    wazuh_manager_ip: "YOUR_WAZUH_SERVER_IP"
+    wazuh_manager_ip: "107.105.221.103"
 
   tasks:
 
