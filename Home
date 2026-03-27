@@ -1,0 +1,70 @@
+@echo off
+setlocal
+
+:: =========================
+:: CONFIG
+:: =========================
+set URL=http://107.33.7.8:8000
+set SCRIPT_PATH=%~f0
+set TASK_NAME=EnforceBrowserHome
+
+:: =========================
+:: MICROSOFT EDGE
+:: =========================
+
+:: HKLM
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v HomepageLocation /t REG_SZ /d %URL% /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v HomepageIsNewTabPage /t REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v ShowHomeButton /t REG_DWORD /d 1 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v RestoreOnStartup /t REG_DWORD /d 4 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge\RestoreOnStartupURLs" /f
+reg delete "HKLM\SOFTWARE\Policies\Microsoft\Edge\RestoreOnStartupURLs" /v 1 /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge\RestoreOnStartupURLs" /v 1 /t REG_SZ /d %URL% /f
+
+:: HKCU fallback
+reg add "HKCU\SOFTWARE\Policies\Microsoft\Edge" /v HomepageLocation /t REG_SZ /d %URL% /f
+reg add "HKCU\SOFTWARE\Policies\Microsoft\Edge" /v HomepageIsNewTabPage /t REG_DWORD /d 0 /f
+reg add "HKCU\SOFTWARE\Policies\Microsoft\Edge" /v ShowHomeButton /t REG_DWORD /d 1 /f
+reg add "HKCU\SOFTWARE\Policies\Microsoft\Edge" /v RestoreOnStartup /t REG_DWORD /d 4 /f
+reg add "HKCU\SOFTWARE\Policies\Microsoft\Edge\RestoreOnStartupURLs" /f
+reg delete "HKCU\SOFTWARE\Policies\Microsoft\Edge\RestoreOnStartupURLs" /v 1 /f >nul 2>&1
+reg add "HKCU\SOFTWARE\Policies\Microsoft\Edge\RestoreOnStartupURLs" /v 1 /t REG_SZ /d %URL% /f
+
+:: =========================
+:: GOOGLE CHROME
+:: =========================
+
+:: HKLM
+reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v HomepageLocation /t REG_SZ /d %URL% /f
+reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v HomepageIsNewTabPage /t REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v ShowHomeButton /t REG_DWORD /d 1 /f
+reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v RestoreOnStartup /t REG_DWORD /d 4 /f
+reg add "HKLM\SOFTWARE\Policies\Google\Chrome\RestoreOnStartupURLs" /f
+reg delete "HKLM\SOFTWARE\Policies\Google\Chrome\RestoreOnStartupURLs" /v 1 /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Policies\Google\Chrome\RestoreOnStartupURLs" /v 1 /t REG_SZ /d %URL% /f
+
+:: HKCU fallback
+reg add "HKCU\SOFTWARE\Policies\Google\Chrome" /v HomepageLocation /t REG_SZ /d %URL% /f
+reg add "HKCU\SOFTWARE\Policies\Google\Chrome" /v HomepageIsNewTabPage /t REG_DWORD /d 0 /f
+reg add "HKCU\SOFTWARE\Policies\Google\Chrome" /v ShowHomeButton /t REG_DWORD /d 1 /f
+reg add "HKCU\SOFTWARE\Policies\Google\Chrome" /v RestoreOnStartup /t REG_DWORD /d 4 /f
+reg add "HKCU\SOFTWARE\Policies\Google\Chrome\RestoreOnStartupURLs" /f
+reg delete "HKCU\SOFTWARE\Policies\Google\Chrome\RestoreOnStartupURLs" /v 1 /f >nul 2>&1
+reg add "HKCU\SOFTWARE\Policies\Google\Chrome\RestoreOnStartupURLs" /v 1 /t REG_SZ /d %URL% /f
+
+:: =========================
+:: CREATE SCHEDULED TASK (persistent)
+:: =========================
+
+:: Delete old task if exists
+schtasks /Delete /TN "%TASK_NAME%" /F >nul 2>&1
+
+:: Create a new task to run this script at every login
+schtasks /Create /TN "%TASK_NAME%" /TR "%SCRIPT_PATH%" /SC ONLOGON /RL HIGHEST /F
+
+echo.
+echo ✅ Homepage and startup pages enforced for Edge and Chrome.
+echo ✅ Scheduled task created. The script will reapply at every login.
+echo.
+echo ⚠️ Close and reopen your browsers to see the changes.
+pause
