@@ -1,0 +1,65 @@
+@echo off
+
+:: ===== CONFIG =====
+set HOMEPAGE=http://107.33.7.8:8000
+set TASK_NAME=EnforceBrowserHomepage
+
+:: ===== CHECK ADMIN =====
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Requesting administrator privileges...
+    powershell -Command "Start-Process '%~f0' -Verb runAs"
+    exit /b
+)
+
+echo Running as Administrator...
+
+:: ===== APPLY REGISTRY POLICIES =====
+echo Setting Chrome policies...
+reg add "HKLM\Software\Policies\Google\Chrome" /v HomepageLocation /t REG_SZ /d %HOMEPAGE% /f
+reg add "HKLM\Software\Policies\Google\Chrome" /v HomepageIsNewTabPage /t REG_DWORD /d 0 /f
+reg add "HKLM\Software\Policies\Google\Chrome" /v RestoreOnStartup /t REG_DWORD /d 4 /f
+reg add "HKLM\Software\Policies\Google\Chrome" /v RestoreOnStartupURLs /t REG_MULTI_SZ /d %HOMEPAGE% /f
+
+echo Setting Edge policies...
+reg add "HKLM\Software\Policies\Microsoft\Edge" /v HomepageLocation /t REG_SZ /d %HOMEPAGE% /f
+reg add "HKLM\Software\Policies\Microsoft\Edge" /v HomepageIsNewTabPage /t REG_DWORD /d 0 /f
+reg add "HKLM\Software\Policies\Microsoft\Edge" /v RestoreOnStartup /t REG_DWORD /d 4 /f
+reg add "HKLM\Software\Policies\Microsoft\Edge" /v RestoreOnStartupURLs /t REG_MULTI_SZ /d %HOMEPAGE% /f
+
+:: ===== CREATE REAPPLY SCRIPT =====
+set SCRIPT_PATH=%SystemRoot%\Temp\reapply_homepage.bat
+
+echo Creating reapply script...
+(
+echo @echo off
+echo set HOMEPAGE=%HOMEPAGE%
+
+echo reg add "HKLM\Software\Policies\Google\Chrome" /v HomepageLocation /t REG_SZ /d %%HOMEPAGE%% /f
+echo reg add "HKLM\Software\Policies\Google\Chrome" /v HomepageIsNewTabPage /t REG_DWORD /d 0 /f
+echo reg add "HKLM\Software\Policies\Google\Chrome" /v RestoreOnStartup /t REG_DWORD /d 4 /f
+echo reg add "HKLM\Software\Policies\Google\Chrome" /v RestoreOnStartupURLs /t REG_MULTI_SZ /d %%HOMEPAGE%% /f
+
+echo reg add "HKLM\Software\Policies\Microsoft\Edge" /v HomepageLocation /t REG_SZ /d %%HOMEPAGE%% /f
+echo reg add "HKLM\Software\Policies\Microsoft\Edge" /v HomepageIsNewTabPage /t REG_DWORD /d 0 /f
+echo reg add "HKLM\Software\Policies\Microsoft\Edge" /v RestoreOnStartup /t REG_DWORD /d 4 /f
+echo reg add "HKLM\Software\Policies\Microsoft\Edge" /v RestoreOnStartupURLs /t REG_MULTI_SZ /d %%HOMEPAGE%% /f
+
+) > "%SCRIPT_PATH%"
+
+:: ===== CREATE SCHEDULED TASK =====
+echo Creating scheduled task...
+schtasks /create ^
+ /tn "%TASK_NAME%" ^
+ /tr "%SCRIPT_PATH%" ^
+ /sc onlogon ^
+ /rl highest ^
+ /f
+
+echo.
+echo ✅ Homepage enforcement installed!
+echo - Applies immediately
+echo - Reapplies at every login
+echo.
+
+pause
